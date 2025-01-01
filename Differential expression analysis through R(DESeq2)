@@ -1,0 +1,114 @@
+#if (!require("BiocManager", quietly = TRUE))
+#  install.packages("BiocManager")
+
+#BiocManager::install("DESeq2", dependencies=TRUE)
+
+#to load library
+library(DESeq2)
+# Load necessary libraries
+library(ggplot2)
+library(pheatmap)
+library(geometry)
+
+# Load the count data
+data <- read.csv("/home/vaibhavi-jain/Downloads/Liver_cancer/Count_data.csv", sep='\t')
+
+metaData <- read.csv('/home/vaibhavi-jain/Downloads/Liver_cancer/metadata_count_data.csv', header = TRUE, sep = "\t")
+head(metaData)
+
+# Run DESeq2 analysis with tryCatch to skip dispersion estimation
+dds <- tryCatch({
+  DESeq(dds)
+}, error = function(e) {
+  message("Skipping dispersion estimation: ", e$message)
+  return(dds)
+})
+library(DESeq2)
+dds <- DESeqDataSetFromMatrix(countData=data, colData=metaData, design=~dex, tidy = TRUE)
+dds<- DESeq(dds)
+# Get results (log2 fold change and p-values)
+res <- results(dds)
+
+library(dplyr)
+# Classify genes based on fold change and p-value thresholds
+res$significance <- case_when(
+  res$padj < 0.05 & res$log2FoldChange > 0 ~ "Upregulated",
+  res$padj < 0.05 & res$log2FoldChange < 0 ~ "Downregulated",
+  res$padj >= 0.05 & res$padj <= 1 ~ "Not Significant",
+  TRUE ~ "Unknown"
+)
+
+# Save the differential expression results to a CSV file
+write.csv(res, "/home/vaibhavi-jain/Downloads/Liver_cancer/rstudio/differential_expression_results.csv")
+
+# Basic volcano plot with color based on significance
+volcano_plot <- ggplot(res, aes(x = log2FoldChange, y = -log10(pvalue), color = significance)) +
+  geom_point(alpha = 0.6) +
+  scale_color_manual(values = c("Upregulated" = "red", "Downregulated" = "green", "Not Significant" = "black")) +
+  labs(title = "Volcano Plot", x = "Log2 Fold Change", y = "-Log10(p-value)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Show the volcano plot
+print(volcano_plot)
+
+# Save the plot to a file
+ggsave("/home/vaibhavi-jain/Downloads/Liver_cancer/rstudio/volcano_plot_updated.png", plot = volcano_plot)
+
+#if (!require("BiocManager", quietly = TRUE))
+#  install.packages("BiocManager")
+
+#BiocManager::install("DESeq2", dependencies=TRUE)
+
+#to load library
+library(DESeq2)
+# Load necessary libraries
+library(ggplot2)
+library(pheatmap)
+library(geometry)
+
+# Load the count data
+data <- read.csv("/home/vaibhavi-jain/Downloads/Liver_cancer/Count_data.csv", sep='\t')
+
+metaData <- read.csv('/home/vaibhavi-jain/Downloads/Liver_cancer/metadata_count_data.csv', header = TRUE, sep = "\t")
+head(metaData)
+
+# Run DESeq2 analysis with tryCatch to skip dispersion estimation
+dds <- tryCatch({
+  DESeq(dds)
+}, error = function(e) {
+  message("Skipping dispersion estimation: ", e$message)
+  return(dds)
+})
+library(DESeq2)
+dds <- DESeqDataSetFromMatrix(countData=data, colData=metaData, design=~dex, tidy = TRUE)
+dds<- DESeq(dds)
+# Get results (log2 fold change and p-values)
+res <- results(dds)
+
+library(dplyr)
+# Classify genes based on fold change and p-value thresholds
+res$significance <- case_when(
+  res$padj < 0.05 & res$log2FoldChange > 0 ~ "Upregulated",
+  res$padj < 0.05 & res$log2FoldChange < 0 ~ "Downregulated",
+  res$padj >= 0.05 & res$padj <= 1 ~ "Not Significant",
+  TRUE ~ "Unknown"
+)
+
+# Save the differential expression results to a CSV file
+write.csv(res, "/home/vaibhavi-jain/Downloads/Liver_cancer/rstudio/differential_expression_results.csv")
+
+# Basic volcano plot with color based on significance
+volcano_plot <- ggplot(res, aes(x = log2FoldChange, y = -log10(pvalue), color = significance)) +
+  geom_point(alpha = 0.6) +
+  scale_color_manual(values = c("Upregulated" = "red", "Downregulated" = "green", "Not Significant" = "black")) +
+  labs(title = "Volcano Plot", x = "Log2 Fold Change", y = "-Log10(p-value)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Show the volcano plot
+print(volcano_plot)
+
+# Save the plot to a file
+ggsave("/home/vaibhavi-jain/Downloads/Liver_cancer/rstudio/volcano_plot_updated.png", plot = volcano_plot)
+
