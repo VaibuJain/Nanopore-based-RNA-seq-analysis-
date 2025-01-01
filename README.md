@@ -28,6 +28,16 @@ To run this analysis, the following Python libraries are required:
 - `statsmodels`
 - `sklearn`
 - `bioinfokit` (for enrichment analysis)
+- SRATOOLKIT
+- Fastqc
+- NanoQC
+- Cutadapt
+- Minimap2
+- Pysam
+- HTSeq
+- DESeq2
+- ggplot
+- GProfiler
 
 Install dependencies using:
 ```bash
